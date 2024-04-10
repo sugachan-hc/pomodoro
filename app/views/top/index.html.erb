@@ -1,0 +1,270 @@
+<div class="settings" onclick="openSettings()">
+  <i class="fa-solid fa-gear"></i>
+</div>
+
+<div class="d-flex flex-columns justify-content-center align-items-center gap-10">
+
+  <div class="">
+    <div class="data-percent">
+      <div id="timer" class="timer">00:00</div>
+      <div id="mode">Work</div>
+    </div>
+  </div>
+  <div class="btn-group">
+    <button class="play" onclick="play()"><i class="fa-solid fa-play fa-3x"></i></button>
+    <button class="pause d-none" onclick="pause()"><i class="fa-solid fa-pause fa-3x"></i></button>
+    <button class="reset" onclick="stop()"><i class="fa-solid fa-stop fa-3x"></i></button>
+  </div>
+</div>
+
+<div class="settings-list">
+  <i class="fa-solid fa-xmark close" onclick="closeSettings()"></i>
+  <h3>Work</h3>
+  <div class="d-flex flex-columns gap-10">
+    <label>
+      Minutes
+      <input type="number" id="work-time-minutes" min="0" step="1" value="25">
+    </label>
+    <label>
+      Seconds
+      <input type="number" id="work-time-seconds" min="0" step="1" value="0">
+    </label>
+    <label>
+      Intervals
+      <input type="number" id="work-time-intervals" min="0" step="1" value="4">
+    </label>
+  </div>
+  <h3 class="mt-3">Rest</h3>
+  <div class="d-flex flex-columns gap-10">
+    <label>
+      Minutes
+      <input type="number" id="rest-time-minutes" min="0" step="1" value="5">
+    </label>
+    <label>
+      Seconds
+      <input type="number" id="rest-time-seconds" min="0" step="1" value="0">
+    </label>
+  </div>
+  <h3 class="mt-3">Long Rest</h3>
+  <div class="d-flex flex-columns gap-10">
+    <label>
+      Minutes
+      <input type="number" id="long-rest-time-minutes" min="0" step="1" value="15">
+    </label>
+    <label>
+      Seconds
+      <input type="number" id="long-rest-time-seconds" min="0" step="1" value="0">
+    </label>
+  </div>
+  <button onclick="applyNewTimes()">Apply</button>
+</div>
+
+<script>
+  // let workTime = 25 * 60 * 1000;
+// let restTime = 5 * 60 * 1000;
+// let longRestTime = 15 * 60 * 1000;
+let workTime = 25 * 60 * 1000;
+let restTime = 5 * 60 * 1000;
+let longRestTime = 15 * 60 * 1000;
+
+let intervalCount = 2;
+let numberWorkIntervals = intervalCount;
+let currentMode = "Work";
+let time = workTime;
+
+
+let interval;
+
+const timer = document.getElementById('timer');
+// const timerTitle = document.getElementById('timerTitle');
+const timerTitle = "Simple Pomodoro Timer XX"; //check later
+const dataPercent = document.querySelectorAll('.data-percent');
+const modeEl = document.getElementById('mode');
+
+updateCountdown(time);
+// countdown(time); 削除
+timerTitle.innerText = "Simple Pomodoro Timer"; //追加
+
+function countdown(pTime) {
+  interval = setInterval(() => {
+    pTime -= 1000;
+    // time = pTime;
+    if (pTime <= 0) {
+      clearInterval(interval);
+      numberWorkIntervals = currentMode == "Work" ? numberWorkIntervals - 1 : numberWorkIntervals;
+      // if (numberWorkIntervals > 0) {
+      //   swapMode();
+      // }
+      swapMode();
+    }
+
+    updateCountdown(pTime);
+
+  }, 1000)
+}
+
+
+// function swapMode() {
+//   currentMode = currentMode == "Work" ? "Rest" : "Work";
+//   time = currentMode == "Work" ? workTime : restTime;
+
+//   updateCountdown(time);
+//   countdown(time);
+// }
+
+function swapMode() {
+  if (currentMode == "Work") {
+    if (numberWorkIntervals == 0) {
+      currentMode = "LongRest";
+      time = longRestTime;
+
+    } else {
+      currentMode = "Rest";
+      time = restTime;
+    }
+  } else if (currentMode == "Rest") {
+    currentMode = "Work";
+    time = workTime;
+  } else if (currentMode == "LongRest") {
+    currentMode = "Work";
+    time = workTime;
+    numberWorkIntervals = intervalCount;
+  }
+
+  updateCountdown(time);
+  countdown(time);
+}
+
+// function swapMode() {
+//   if (numberWorkIntervals <= 0) {
+//     currentMode = "Work"; // ワーク間隔がすべて終了した場合は再度"Work"モードに戻る
+//     numberWorkIntervals = intervalCount;
+//     time = workTime;
+//   } else {
+//     currentMode = currentMode == "Work" ? "Rest" : "Work";
+//     numberWorkIntervals = currentMode == "Work" ? numberWorkIntervals : numberWorkIntervals - 1;
+//     time = currentMode == "Work" ? workTime : restTime;
+//   }
+
+//   updateCountdown(time);
+//   countdown(time);
+// }
+
+function updateCountdown(pTime) {
+
+  // if (numberWorkIntervals <= 0) {
+  //   dataPercent[0].style.setProperty('--angle', '360deg');
+  //   // dataPercent[0].style.setProperty('--color', 'red');
+  //   dataPercent[0].style.setProperty('--color', 'yellow');
+  //   timer.innerText = "00:00";
+  //   modeEl.innerText = "END";
+  // }
+
+  if (pTime <= 0) {
+    dataPercent[0].style.setProperty('--angle', '360deg');
+    // dataPercent[0].style.setProperty('--color', 'red');
+    // timer.innerText = "00:00";
+  } else {
+    // let color = currentMode == "Work" ? "blue" : "red";
+    // let angle = (pTime / (currentMode == "Work" ? workTime : restTime) * 360) + 'deg';
+    let color;
+    let angle;
+
+    if (currentMode == "Work") {
+      color = "blue";
+      angle = (pTime / workTime * 360) + 'deg';
+    } else if (currentMode == "Rest") {
+      color = "red";
+      angle = (pTime / restTime * 360) + 'deg';
+    } else {
+      color = "yellow";
+      angle = (pTime / longRestTime * 360) + 'deg';
+    }
+
+    dataPercent[0].style.setProperty('--angle', angle);
+    dataPercent[0].style.setProperty('--color', color);
+
+    let minutes = Math.floor(pTime / 60 / 1000).toString().padStart(2, "0");
+    let seconds = ((pTime / 1000) % 60).toString().padStart(2, "0")
+    timer.innerText = minutes + ":" + seconds;
+    timerTitle.innerText = timer.innerText; //追加
+    modeEl.innerText = currentMode + ` ${numberWorkIntervals}`;
+  }
+}
+
+function play() {
+  clearInterval(interval);
+  countdown(time);
+  document.getElementsByClassName('pause')[0].classList.remove('d-none');
+  document.getElementsByClassName('play')[0].classList.add('d-none');
+}
+
+function pause() {
+  clearInterval(interval);
+  console.log(numberWorkIntervals);
+  let [minutes, seconds] = timer.innerText.split(":");
+  time = ((minutes * 60) + seconds * 1) * 1000;
+  document.getElementsByClassName('play')[0].classList.remove('d-none');
+  document.getElementsByClassName('pause')[0].classList.add('d-none');
+}
+
+// function reset() {
+//   currentMode = "Work";
+//   numberWorkIntervals = intervalCount;
+//   time = workTime;
+
+//   document.getElementsByClassName('pause')[0].classList.remove('d-none');
+//   document.getElementsByClassName('play')[0].classList.add('d-none');
+
+//   clearInterval(interval);
+//   updateCountdown(time);
+//   countdown(time);
+// }
+
+function stop() {
+  currentMode = "Work";
+  numberWorkIntervals = intervalCount;
+  time = workTime;
+  document.getElementsByClassName('pause')[0].classList.add('d-none');
+  document.getElementsByClassName('play')[0].classList.remove('d-none');
+  clearInterval(interval);
+  updateCountdown(time);
+}
+
+function applyNewTimes() {
+  let workTimeInputMinutes = document.getElementById('work-time-minutes').value;
+  let workTimeInputSeconds = document.getElementById('work-time-seconds').value;
+  let workIntervalInputs = document.getElementById('work-time-intervals').value;
+  let restTimeInputMinutes = document.getElementById('rest-time-minutes').value;
+  let restTimeInputSeconds = document.getElementById('rest-time-seconds').value;
+  let longRestTimeInputMinutes = document.getElementById('long-rest-time-minutes').value;
+  let longRTimeInputSeconds = document.getElementById('long-rest-time-seconds').value;
+
+  workTime = workTimeInputMinutes * 60 * 1000 + workTimeInputSeconds * 1000;
+  restTime = restTimeInputMinutes * 60 * 1000 + restTimeInputSeconds * 1000;
+  longRestTime = longRestTimeInputMinutes * 60 * 1000 + longRTimeInputSeconds * 1000;
+
+  intervalCount = workIntervalInputs;
+
+  numberWorkIntervals = intervalCount;
+  currentMode = "Work";
+  time = workTime;
+
+  console.log(workTime, restTime, intervalCount)
+
+  clearInterval(interval);
+  updateCountdown(time);
+  // countdown(time);
+}
+
+function closeSettings() {
+  let settingsList = document.querySelectorAll('.settings-list')[0];
+  settingsList.style.right = "-20vw";
+}
+
+function openSettings() {
+  let settingsList = document.querySelectorAll('.settings-list')[0];
+  settingsList.style.right = "0";
+}
+
+</script>

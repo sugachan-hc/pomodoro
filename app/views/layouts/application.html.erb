@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Pomodoro</title>
+    <title>Simple Pomodoro Timer</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    
+    
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/48e9ba994a.js" crossorigin="anonymous"></script>
   </head>
 
   <body>
-    <%= yield %>
+    <main class="main-content">
+      <div class="content-wrapper">
+        <%= yield %>
+      </div>
+    </main> 
+    <footer class="footer">
+      <p class="footer-text">&copy; <%= Time.now.year %> Sugachan</p>
+    </footer>    
   </body>
 </html>
